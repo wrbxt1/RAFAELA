@@ -96,6 +96,25 @@
       border-bottom-right-radius: 18px;
     }
 
+    /* Emoji no meio */
+    .env-emoji{
+      position: absolute;
+      width: 100%;
+      top: 78px;
+      text-align: center;
+      font-size: 42px;
+      opacity: 0.9;
+      animation: pulseEmoji 1.6s infinite;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    @keyframes pulseEmoji{
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
     .env-text {
       position: absolute;
       width: 100%;
@@ -105,6 +124,8 @@
       color: #ff4d6d;
       font-size: 1.05em;
       padding: 0 10px;
+      z-index: 4;
+      pointer-events: none;
     }
 
     .env-sub {
@@ -116,6 +137,8 @@
       color: #444;
       opacity: 0.9;
       padding: 0 12px;
+      z-index: 4;
+      pointer-events: none;
     }
 
     /* CARTA */
@@ -198,8 +221,9 @@
       <div class="env-flap"></div>
       <div class="env-front"></div>
 
+      <div class="env-emoji">💌</div>
       <div class="env-sub">Tem uma coisinha aqui pra você…</div>
-      <div class="env-text">Rafa, clica pra abrir 💌</div>
+      <div class="env-text">Rafa, clica pra abrir 💘</div>
     </div>
   </div>
 
