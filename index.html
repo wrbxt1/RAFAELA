@@ -20,6 +20,7 @@
       position: relative;
     }
 
+    /* CONTADOR */
     .counter {
       position: fixed;
       top: 15px;
@@ -32,6 +33,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       z-index: 10;
       animation: pulse 2s infinite;
+      display: none; /* só aparece depois de abrir */
     }
 
     @keyframes pulse {
@@ -40,51 +42,142 @@
       100% { transform: scale(1); }
     }
 
-    .card {
-      background: #fff;
-      padding: 35px;
-      border-radius: 22px;
-      max-width: 420px;
-      width: 90%;
-      text-align: center;
+    /* ENVELOPE */
+    .envelope-container {
+      width: 320px;
+      height: 220px;
+      position: relative;
+      cursor: pointer;
+      z-index: 3;
+      transition: transform 0.2s ease;
+    }
+
+    .envelope-container:hover {
+      transform: scale(1.02);
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .env-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      animation: fadeUp 1.2s ease;
-      z-index: 2;
+      overflow: hidden;
     }
 
-    h1 {
+    /* tampa do envelope */
+    .env-flap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      clip-path: polygon(0 0, 100% 0, 50% 55%);
+      transform-origin: top;
+      transition: transform 0.9s ease;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+
+    /* frente do envelope */
+    .env-front {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.9);
+      clip-path: polygon(0 100%, 100% 100%, 100% 45%, 50% 75%, 0 45%);
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+    }
+
+    .env-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      bottom: 18px;
+      font-weight: 600;
       color: #ff4d6d;
-      margin-bottom: 20px;
+      font-size: 1.05em;
+      padding: 0 10px;
     }
 
-    p {
-      font-size: 1.15em;
+    .env-sub {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      bottom: 48px;
+      font-size: 0.9em;
+      color: #444;
+      opacity: 0.9;
+      padding: 0 12px;
+    }
+
+    /* CARTA */
+    .letter {
+      position: absolute;
+      width: 90%;
+      left: 5%;
+      top: 18px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transform: translateY(70px);
+      opacity: 0;
+      transition: all 1s ease;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .letter h1 {
+      margin: 0 0 12px;
+      color: #ff4d6d;
+      font-size: 1.2em;
+    }
+
+    .letter p {
+      margin: 0;
+      font-size: 1.05em;
       line-height: 1.6;
       color: #333;
-      animation: textFade 1.5s ease;
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(25px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ABERTO */
+    .open .env-flap {
+      transform: rotateX(180deg);
     }
 
-    @keyframes textFade {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .open .letter {
+      transform: translateY(-70px);
+      opacity: 1;
+      z-index: 5;
     }
 
+    /* CORAÇÕES */
     .heart {
       position: absolute;
       bottom: -20px;
       font-size: 18px;
       animation: floatUp 8s linear infinite;
       opacity: 0.4;
+      z-index: 1;
     }
 
     @keyframes floatUp {
-      from { transform: translateY(0) translateX(0); opacity: 0.4; }
-      to { transform: translateY(-110vh) translateX(30px); opacity: 0; }
+      from {
+        transform: translateY(0) translateX(0);
+        opacity: 0.4;
+      }
+      to {
+        transform: translateY(-110vh) translateX(30px);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -93,12 +186,25 @@
 
   <div class="counter" id="counter"></div>
 
-  <div class="card">
-    <h1>❤️ Pra você, Rafa ❤️</h1>
-    <p id="message"></p>
+  <div class="envelope-container" id="envelopeContainer">
+    <div class="envelope" id="envelope">
+      <div class="env-back"></div>
+
+      <div class="letter" id="letter">
+        <h1>❤️ Pra você, Rafa ❤️</h1>
+        <p id="message"></p>
+      </div>
+
+      <div class="env-flap"></div>
+      <div class="env-front"></div>
+
+      <div class="env-sub">Tem uma coisinha aqui pra você…</div>
+      <div class="env-text">Rafa, clica pra abrir 💌</div>
+    </div>
   </div>
 
   <script>
+    /* DATA DE INÍCIO */
     const startDate = new Date("2026-02-01T00:00:00");
 
     const messages = [
@@ -146,6 +252,17 @@
     document.getElementById("message").innerText = messages[index];
     document.getElementById("counter").innerText = `Dia ${index + 1} de 30`;
 
+    /* abrir envelope */
+    const envelopeContainer = document.getElementById("envelopeContainer");
+    const envelope = document.getElementById("envelope");
+    const counter = document.getElementById("counter");
+
+    envelopeContainer.addEventListener("click", () => {
+      envelope.classList.add("open");
+      counter.style.display = "block";
+    });
+
+    /* CORAÇÕES */
     function createHeart() {
       const heart = document.createElement("div");
       heart.classList.add("heart");
